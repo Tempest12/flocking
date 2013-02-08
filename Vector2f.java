@@ -260,4 +260,33 @@ public class Vector2f
 
 		return randomVector;
 	}
+		
+	/**
+	 * Okay so basically we want to calculate the toroidial position of boids in limbo(the area off the screen they have to travel before being teleport to the other side of the screen).
+	 */
+	public static Vector2f toroidialPosition(Vector2f position)
+	{
+		Vector2f toroidialPosition = new Vector2f(position);		
+
+		if(position.x < 0)
+		{
+			toroidialPosition.x = Config.width - position.x;
+		}
+		else if(position.x > Config.width)
+		{
+			toroidialPosition.x = -(position.x - Config.width);
+		}
+
+		if(position.y < 0)
+		{
+			toroidialPosition.y = Config.height - position.y;
+		}
+		else if(position.y > Config.height)
+		{
+			toroidialPosition.y = -(position.y - Config.height);
+		}
+
+		return toroidialPosition;
+		
+	}
 }

@@ -14,7 +14,7 @@ public class BoidUpdateThread implements Runnable
 	{
 		for(int index = start; index < end; index++)
 		{
-			Core.boidList.get(index).update();
+			Core.boidList.get(index).update(1.0f);
 		}
 	}
 }

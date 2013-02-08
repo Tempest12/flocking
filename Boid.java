@@ -17,6 +17,8 @@ public class Boid
 	
 	public int id;
 
+	public boolean wrapping = false;
+
 	//Stuff used for drawing
 	public Vector2f north;
 	public Vector2f east;
@@ -44,6 +46,8 @@ public class Boid
 
 		this.southEast = new Vector2f();
 		this.southWest = new Vector2f();
+
+		this.wrapping = false;
 
 		this.id = uniqueID;
 		uniqueID++;
@@ -74,7 +78,14 @@ public class Boid
 					{
 						if(toroidialDistanceSquared(that) < Config.flockingRadiusSquared)
 						{
-							center.add(that.position);
+							if(wrapping)
+							{
+								center.add(Vector2f.toroidialPosition(that.position));
+							}
+							else
+							{
+								center.add(that.position);
+							}
 							count++;
 						}
 					}
@@ -102,6 +113,34 @@ public class Boid
 		}	
 	}	
 
+	public void checkWrapping()
+	{
+		int row = ((int)position.x / Config.gridSize) % Config.numberOfSquares;
+		int col = ((int)position.y / Config.gridSize) % Config.numberOfSquares;
+		
+		//Check top
+		if(row <= 0)
+		{
+			wrapping = true;
+		}
+		else if(row >= Core.spacialGrid.numberOfSquares - 1)
+		{
+			wrapping = true;
+		}
+		else if(col <= 0)
+		{ 
+			wrapping = true;
+		}
+		else if(col >= Core.spacialGrid.numberOfSquares - 1)
+		{
+			wrapping = true;
+		}	
+		else
+		{
+			wrapping = false;
+		}
+	}
+	
 	public void collisionAvoidance()
 	{
 		int row = (int)position.x / Config.gridSize;
@@ -128,15 +167,14 @@ public class Boid
 					{
 						if(toroidialDistanceSquared(that) < Config.avoidanceDistanceSquared)
 						{
-							/*temp.set(this.position.x - that.position.x, this.position.y - that.position.y);
-							weight = 1 / temp.magnitude();
-							
-							count += weight;
-
-							temp.set(that.position);
-							temp.scale(weight);*/
-							
-							avoid.add(that.position);
+							if(wrapping)
+							{
+								avoid.add(Vector2f.toroidialPosition(that.position));
+							}
+							else
+							{
+								avoid.add(that.position);
+							}
 							count++;
 						}
 					}
@@ -257,7 +295,14 @@ public class Boid
 					{
 						if(toroidialDistanceSquared(that) < Config.flockingRadiusSquared)
 						{
-							match.add(that.velocity);
+							if(wrapping)
+							{
+								match.add(Vector2f.toroidialPosition(that.position));
+							}
+							else
+							{
+								match.add(that.position);
+							}
 							count++;
 						}
 					}
@@ -281,6 +326,8 @@ public class Boid
 	{
 		Log.writeDebug("Boid " + id + " before update");
 		//Log.writeDebug("Position: " + position + " Velocity: " + velocity);		
+
+		checkWrapping();
 
 		acceleration.set(0.0f, 0.0f);		
 
