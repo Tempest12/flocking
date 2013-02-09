@@ -148,8 +148,8 @@ public class Vector2f
      */
     public void scale(float scalar)
     {
-        x *= scalar;
-        y *= scalar;
+        this.x *= scalar;
+        this.y *= scalar;
     }    
     
 	public void set(float x, float y)

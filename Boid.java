@@ -55,7 +55,7 @@ public class Boid
 		
 	public void centerTheFlock()
 	{
-		Log.writeDebug("Centering Force:");
+		//Log.writeDebug("Centering Force:");
 
 		int row = (int)position.x / Config.gridSize;
 		int col = (int)position.y / Config.gridSize;
@@ -98,18 +98,18 @@ public class Boid
 		if(count != 0)
 		{
 			center.divideByScalar(count);
-			//Log.writeDebug("Average center: " + center);
+			////Log.writeDebug("Average center: " + center);
 			center.subtract(this.position);
-			//Log.writeDebug("After subtraction: " + center);
+			////Log.writeDebug("After subtraction: " + center);
 			//center.normalize();
-			//Log.writeDebug("Normalized: " + center);
+			////Log.writeDebug("Normalized: " + center);
 			//center.scale(Config.centeringStrength);	
-			center.clamp(0.0f, Config.centeringStrength * Config.maxVelocity);					
+			center.clamp(Config.clampCenterLow, Config.clampCenterHigh);					
 			this.acceleration.add(center);
 		}
 		else
 		{
-			Log.writeDebug("No Centering");
+			//Log.writeDebug("No Centering");
 		}	
 	}	
 
@@ -182,16 +182,22 @@ public class Boid
 			}
 		}
 
+		if(Core.repulse && Core.mouseDown && Vector2f.distanceSquared(this.position, Core.mousePosition) < Config.avoidanceDistanceSquared)
+		{
+			count++;
+			avoid.add(Core.mousePosition);
+		}
+
 		if(count != 0)
 		{
 			avoid.divideByScalar(count);
 			//avoid.scale(count);
 			avoid = Vector2f.subtractVectors(this.position, avoid);
-			//Log.writeDebug("After Subtraction: " + avoid);
+			////Log.writeDebug("After Subtraction: " + avoid);
 			//avoid.normalize();
 			//avoid.scale(Config.collisionAvoidanceStrength);
-			//avoid.clamp(0.0f, Config.collisionAvoidanceStrength * Config.maxVelocity);		
-			Log.writeDebug("Avoidance Force: " + avoid);			
+			avoid.clamp(Config.clampAvoidLow, Config.clampAvoidHigh);		
+			//Log.writeDebug("Avoidance Force: " + avoid);			
 			this.acceleration.add(avoid);
 		}
 	}
@@ -316,36 +322,48 @@ public class Boid
 			match.subtract(this.velocity);
 			//match.normalize();
 			//match.scale(Config.velocityMatchingStrength);
-			match.clamp(0.0f, Config.velocityMatchingStrength * Config.maxVelocity);	
-			Log.writeDebug("Matching Force: " + match);		
+			match.clamp(Config.clampMatchLow, Config.clampMatchHigh);	
+			//Log.writeDebug("Matching Force: " + match);		
 			this.acceleration.add(match);
 		}
 	}
 
 	public void update(float timeStep)
 	{
-		Log.writeDebug("Boid " + id + " before update");
-		//Log.writeDebug("Position: " + position + " Velocity: " + velocity);		
+		//Log.writeDebug("Boid " + id + " before update");
+		////Log.writeDebug("Position: " + position + " Velocity: " + velocity);		
 
 		checkWrapping();
 
 		acceleration.set(0.0f, 0.0f);		
 
-		centerTheFlock();
-		wander();
-		velocityMatching();
-		collisionAvoidance();
+		if(Core.centerFlock)
+		{
+			centerTheFlock();
+		}
+		if(Core.wanderForce)
+		{
+			wander();
+		}
+		if(Core.matchVelocities)
+		{		
+			velocityMatching();
+		}
+		if(Core.avoidBoids)
+		{
+			collisionAvoidance();
+		}
 
 		acceleration.normalize();
 		acceleration.scale(Config.newAcceleration);
 		velocity.normalize();
 		velocity.scale(Config.oldVelocity);
 
-		//Log.writeDebug("After Update:");
-		//Log.writeDebug("Acceleration: " + acceleration.toString());
+		////Log.writeDebug("After Update:");
+		////Log.writeDebug("Acceleration: " + acceleration.toString());
 
 		velocity.add(acceleration);
-		//Log.writeDebug("Velocity: " + velocity.toString());
+		////Log.writeDebug("Velocity: " + velocity.toString());
 
 		velocity.clamp(Config.minVelocity, Config.maxVelocity);
 
@@ -353,13 +371,13 @@ public class Boid
 		
 		wrap();
 
-		Log.writeDebug("New Position: " + position.toString() + "\n");
+		//Log.writeDebug("New Position: " + position.toString() + "\n");
 
 		computeOrientation();
 
 		computeDrawLocations();	
 
-		Log.writeDebug("");
+		//Log.writeDebug("");
 	}
 	
 	public void wander()
@@ -370,7 +388,7 @@ public class Boid
 		Vector2f randomHeading = Vector2f.randomDirection();
 
 		randomHeading.scale(Config.randomForceStrength);
-		Log.writeDebug("Wanering Force: " + randomHeading);	
+		//Log.writeDebug("Wanering Force: " + randomHeading);	
 
 		acceleration.add(randomHeading);
 	}

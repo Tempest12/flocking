@@ -1,7 +1,7 @@
 public class Config
 {
 	//Program Stuff
-	public static int logLevel = 0;
+	public static int logLevel = 1;
 	
 	//Window Stuff
 	public static int width = 800;
@@ -15,8 +15,8 @@ public class Config
 	public static float goalSize = 7.0f;
 
 	//Boid Stuff
-	public static float maxVelocity = 3.5f;
-	public static float minVelocity = 1.0f;
+	public static float maxVelocity = 9.5f;
+	public static float minVelocity = 0.25f;
 
 	public static float boidSize = 5.0f;
 
@@ -36,6 +36,16 @@ public class Config
 		public static float randomForceStrength = 0.05f;
 		public static float velocityMatchingStrength = 0.20f;
 		public static float collisionAvoidanceStrength = 0.55f;
+
+			//Clamps for those Forces
+			public static float clampCenterLow = centeringStrength * minVelocity;
+			public static float clampCenterHigh = centeringStrength * maxVelocity;
+
+			public static float clampMatchLow = velocityMatchingStrength * minVelocity;
+			public static float clampMatchHigh = velocityMatchingStrength * maxVelocity;
+			
+			public static float clampAvoidLow = collisionAvoidanceStrength * minVelocity;
+			public static float clampAvoidHigh = collisionAvoidanceStrength * maxVelocity;
 
 		//Velocity Control Strengths
 		public static float oldVelocity = 0.65f;

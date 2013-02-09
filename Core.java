@@ -14,10 +14,25 @@ public class Core
 	public static float goalSize;
 
 	//Mouse Stuff
-	public static int mouseX = 0;
-	public static int mouseY = 0;
-	public static Vector2f mousePosition;
+	public static Vector2f mousePosition = new Vector2f();
+	public static boolean mouseDown = false;
 
+	//Simulation Properties
+	public static boolean paused = false;
+	
+	public static boolean centerFlock = true;
+	public static boolean avoidBoids = true;
+	public static boolean matchVelocities = true;
+	public static boolean wanderForce = true;
+
+	public static boolean attract = true;
+	public static boolean repulse = false;
+
+	public static void addBoid()
+	{
+		boidList.add(new Boid(new Vector2f(random.nextInt(Config.width + 1), random.nextInt(Config.height + 1))));
+	}
+	
 	public static void init()
 	{
 		Log.init(Config.logLevel);
@@ -55,10 +70,23 @@ public class Core
 
 	}
 	
+	public static void removeBoid()
+	{
+		boidList.remove(random.nextInt(boidList.size()));
+	}
+
+	public static void scatter()
+	{
+		for(int index = 0; index < boidList.size(); index++)
+		{
+			boidList.get(index).position.x = random.nextInt(Config.width);
+			boidList.get(index).position.y = random.nextInt(Config.height);
+			boidList.get(index).computeDrawLocations();
+		}
+	}	
+
 	public static void update()
 	{
-		mousePosition.set(mouseX, mouseY);
-
 		for(int index = 0; index < boidList.size(); index++)
 		{
 			spacialGrid.placeInGrid(boidList.get(index));
@@ -67,7 +95,6 @@ public class Core
 		for(int index = 0; index < boidList.size(); index++)
 		{
 			boidList.get(index).update(1.0f);
-			//System.out.println(boidList.get(index).toString());
 		}
 
 		for(int index = 0; index < boidList.size(); index++)

@@ -1,5 +1,20 @@
 int shift = 20;
 
+boolean oneUp = true;
+boolean twoUp = true;
+boolean threeUp = true;
+boolean fourUp = true;
+
+boolean spaceUp = true;
+boolean sUp = true;
+boolean pUp = true;
+boolean cUp = true;
+boolean aUp = true;
+boolean rUp = true;
+
+boolean paused = false;
+boolean clearWindow = true;
+
 void setup()
 {
 	Core.init();
@@ -12,17 +27,108 @@ void setup()
 	background(Config.bg_red, Config.bg_green, Config.bg_blue, Config.bg_alpha);
 }
 
+void handleKeyBoardEvents()
+{
+	Core.mouseDown = mousePressed;
+
+	Core.mousePosition.set(mouseX, mouseY);
+
+	if(!keyPressed)
+	{
+		oneUp = true;
+		twoUp = true;
+		threeUp = true;
+		fourUp = true;
+
+		spaceUp = true;
+		sUp = true;
+		pUp = true;
+		cUp = true;
+		aUp = true;
+		rUp = true;
+	}
+	else if(key == ' ' && spaceUp)
+	{
+		spaceUp = false;
+		paused = !paused;
+	}
+	else if(key == '1' && oneUp)
+	{
+		Core.centerFlock = !Core.centerFlock;
+		oneUp = false;
+		printForces();
+	}
+	else if(key == '2' && twoUp)
+	{
+		Core.matchVelocities = !Core.matchVelocities;
+		twoUp = false;
+		printForces();
+	}
+	else if(key == '3' && threeUp)
+	{
+		Core.avoidBoids = !Core.avoidBoids;
+		threeUp = false;
+		printForces();
+	}
+	else if(key == '4' && fourUp)
+	{
+		Core.wanderForce = !Core.wanderForce;
+		fourUp = false;
+		printForces();
+	}
+	else if((key == 's' || key == 'S') && sUp)
+	{
+		Core.scatter();
+		sUp = false;
+	}
+	else if(key == '+')
+	{
+		Core.addBoid();
+	}
+	else if(key == '-')
+	{
+		Core.removeBoid();
+	}
+	else if((key == 'p' || key == 'P') && pUp)
+	{
+		clearWindow = !clearWindow;
+		pUp = false;
+	}
+	else if((key == 'c' || key == 'C') && cUp)
+	{
+		background(Config.bg_red, Config.bg_green, Config.bg_blue, Config.bg_alpha);
+		cUp = false;
+	}
+	else if((key == 'a' || key == 'A') && aUp)
+	{
+		Core.attract = true;
+		Core.repulse = false;
+		aUp = false;
+	}
+	else if((key == 'r' || key == 'R') && rUp)
+	{
+		Core.attract = false;
+		Core.repulse = true;
+		rUp = false;
+	}
+}
+
 void draw()
 {
-	Core.mouseX = mouseX;
-	Core.mouseY = mouseY;
+    handleKeyBoardEvents();
 
-	Core.update();
-
+	if(!paused)
+	{
+		Core.update();
+	}
+   
 	/*background(0.08f, 0.08f, 0.08f, 1);
 	fill(Config.bg_red, Config.bg_green, Config.bg_blue, Config.bg_alpha);
 	rect(0 + shift, 0 + shift, Config.width, Config.height);*/
-	background(Config.bg_red, Config.bg_green, Config.bg_blue, Config.bg_alpha);
+	if(clearWindow)
+	{
+		background(Config.bg_red, Config.bg_green, Config.bg_blue, Config.bg_alpha);
+	}
 
 	drawBoids();
 
@@ -97,4 +203,55 @@ void drawGoal()
 	ellipse(Core.goal.x, Core.goal.y, Core.goalSize, Core.goalSize);
 	line(Core.goal.x - (Core.goalSize - 1), Core.goal.y, Core.goal.x + (Core.goalSize - 1), Core.goal.y);
 	line(Core.goal.x, Core.goal.y - (Core.goalSize - 1) , Core.goal.x, Core.goal.y + (Core.goalSize - 1));
+}
+
+void printForces()
+{
+	StringBuilder temp = new StringBuilder("Centering Force: ");
+
+	if(Core.centerFlock)
+	{
+		temp.append("On ");
+	}
+	else
+	{
+		temp.append("Off ");
+	}
+	
+	temp.append("Velocity Matching: ");
+
+	if(Core.matchVelocities)
+	{
+		temp.append("On ");
+	}
+	else
+	{
+		temp.append("Off ");
+	}
+
+	temp.append("Collision Avoidance: ");
+
+	if(Core.avoidBoids)
+	{
+		temp.append("On ");
+	}
+	else
+	{
+		temp.append("Off ");
+	}
+
+	temp.append("Wandering Force: ");
+
+	if(Core.wanderForce)
+	{
+		temp.append("On ");
+	}
+	else
+	{
+		temp.append("Off ");
+	}
+
+	temp.append("\n");
+	
+	println(temp.toString());
 }
