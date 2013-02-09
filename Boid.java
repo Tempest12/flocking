@@ -53,6 +53,24 @@ public class Boid
 		uniqueID++;
 	}
 		
+	public void attractRepel()
+	{
+		if(Core.attract)
+		{
+			acceleration.set(Core.mousePosition);
+			acceleration.subtract(this.position);
+			acceleration.normalize();
+			acceleration.scale(Config.maxVelocity);
+		}
+		if(Core.repulse)
+		{
+			acceleration.set(this.position);
+			acceleration.subtract(Core.mousePosition);
+			acceleration.normalize();
+			acceleration.scale(Config.maxVelocity);
+		}
+	}
+
 	public void centerTheFlock()
 	{
 		//Log.writeDebug("Centering Force:");
@@ -180,12 +198,6 @@ public class Boid
 					}
 				}
 			}
-		}
-
-		if(Core.repulse && Core.mouseDown && Vector2f.distanceSquared(this.position, Core.mousePosition) < Config.avoidanceDistanceSquared)
-		{
-			count++;
-			avoid.add(Core.mousePosition);
 		}
 
 		if(count != 0)
@@ -337,21 +349,28 @@ public class Boid
 
 		acceleration.set(0.0f, 0.0f);		
 
-		if(Core.centerFlock)
+		if(Core.mouseDown && Vector2f.distanceSquared(Core.mousePosition, this.position) < Config.mouseRangeSquared)
 		{
-			centerTheFlock();
+			attractRepel();
 		}
-		if(Core.wanderForce)
+		else
 		{
-			wander();
-		}
-		if(Core.matchVelocities)
-		{		
-			velocityMatching();
-		}
-		if(Core.avoidBoids)
-		{
-			collisionAvoidance();
+			if(Core.centerFlock)
+			{
+				centerTheFlock();
+			}
+			if(Core.wanderForce)
+			{
+				wander();
+			}
+			if(Core.matchVelocities)
+			{		
+				velocityMatching();
+			}
+			if(Core.avoidBoids)
+			{
+				collisionAvoidance();
+			}
 		}
 
 		acceleration.normalize();

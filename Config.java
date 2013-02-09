@@ -22,6 +22,9 @@ public class Config
 
 	public static int startingFlockSize = 100;
 
+	public static float mouseRange = 125;
+	public static float mouseRangeSquared = mouseRange * mouseRange;
+
 		//Boid Radii
 		public static float flockingRadius = 70.0f;
 		public static float flockingRadiusSquared = flockingRadius * flockingRadius;

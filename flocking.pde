@@ -101,12 +101,14 @@ void handleKeyBoardEvents()
 	}
 	else if((key == 'a' || key == 'A') && aUp)
 	{
+		println("Attract\n");
 		Core.attract = true;
 		Core.repulse = false;
 		aUp = false;
 	}
 	else if((key == 'r' || key == 'R') && rUp)
 	{
+		println("Repel\n");
 		Core.attract = false;
 		Core.repulse = true;
 		rUp = false;
